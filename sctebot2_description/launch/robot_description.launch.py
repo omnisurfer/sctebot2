@@ -41,10 +41,23 @@ def generate_launch_description():
         ]
     )
 
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen',
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        remappings=[
+            ('/tf', 'tf'),
+            ('tf_statuc', 'tf_static')
+        ]
+    )
+
     # define LaunchDescription variable
     launch_description = LaunchDescription(ARGUMENTS)
 
     # add nodes to LaunchDescription
     launch_description.add_action(robot_state_publisher)
+    launch_description.add_action(joint_state_publisher)
 
     return launch_description
