@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<robot name="sctebot2" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- URDF Tutorial https://docs.ros.org/en/rolling/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html -->
+    
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.6" radius="0.2"/>
+            </geometry>
+        </visual>
+    </link>
+</robot>
