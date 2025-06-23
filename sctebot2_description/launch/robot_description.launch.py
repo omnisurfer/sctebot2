@@ -8,7 +8,7 @@ from launch.substitutions.launch_configuration import LaunchConfiguration
 from launch_ros.actions import Node
 
 ARGUMENTS = [
-    DeclareLaunchArgument('model', default_value='standard', choices=['standard', 'lite'], description='Sctebot2 Model'),
+    DeclareLaunchArgument('model', default_value='standard', choices=['standard', 'lite'], description='Sctebot 2.0 Model'),
     DeclareLaunchArgument('use_sim_time', default_value='false', choices=['true', 'false'], description='use_sim_time'),
     DeclareLaunchArgument('robot_name', default_value='sctebot2', description='Robot Name'),
     DeclareLaunchArgument('namespace', default_value=LaunchConfiguration('robot_name'), description='Robot namespace')
