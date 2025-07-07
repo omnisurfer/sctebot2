@@ -1,16 +1,64 @@
 <?xml version="1.0" ?>
 <robot name="sctebot2" xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <!-- URDF Tutorial https://docs.ros.org/en/rolling/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html -->
+    <!-- 
+    URDF Tutorial https://docs.ros.org/en/humble/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html
+
+    ROS2 Control https://control.ros.org/humble/index.html
     
+     -->
+    
+    <!-- Math constants -->
+    <xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
+
+    <!-- materials -->
+    <material name="black_front">
+        <color rgba="0.1 0.1 0.1 1"/>
+    </material>
+
+    <material name="black_rear">
+        <color rgba="0.3 0.3 0.3 1"/>
+    </material>
+
+    <material name="red">
+        <color rgba="0.8 0 0.0 1"/>
+    </material>
+
+    <material name="blue">
+        <color rgba="0 0 0.8 1"/>
+    </material>
+
+    <material name="green">
+        <color rgba="0 0.8 0 1"/>
+    </material>    
+
     <!-- Robot base dimensions -->
     <xacro:property name="base_length" value="0.442" /> <!-- wheel base derived from this -->
     <xacro:property name="base_width" value="0.157" /> <!-- wheel track derived from this -->
     <xacro:property name="base_height" value="0.01" />
 
-    <material name="blue">
-        <color rgba="0 0 0.8 1"/>
-    </material>
+    <xacro:property name="wheel_track" value="0.25"/>
+    <xacro:property name="wheel_base" value="0.33"/>
+
+    <xacro:property name="wheel_axis_height" value="0.05" />
+    <xacro:property name="wheel_radius" value="0.0525"/>
+    <xacro:property name="wheel_height" value="0.045"/>
+    
+    <!-- base links -->
+    <link name="base_footprint">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${base_length} ${base_width} ${base_height}"/>
+            </geometry>
+            <material name="green"/>
+        </visual>
+    </link>
+    <joint name="base_footprint_joint" type="fixed">
+        <origin xyz="0 0 -${wheel_axis_height}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="base_footprint"/>
+    </joint>
 
     <link name="base_link">
         <visual>
@@ -26,12 +74,142 @@
                 <box size="${base_length} ${base_width} ${base_height}"/>
             </geometry>
         </collision>
-    </link>
+    </link>    
 
-    <link name="base_footprint"/>
-    <joint name="base_footprint_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!-- bumpers -->
+    <xacro:property name="front_bumper_offset" value="0.075"/>
+    <xacro:property name="front_bumper_width" value="0.18"/>
+    <xacro:property name="front_bumper_height" value="0.07"/>
+
+    <link name="front_bumper">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 ${front_bumper_width} ${front_bumper_height}"/>
+            </geometry>
+            <material name="green"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 ${front_bumper_width} ${front_bumper_height}"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="front_bumper_joint" type="fixed">
+        <origin xyz="${front_bumper_offset + base_length / 2.0} 0 ${front_bumper_height / 2.0}" rpy="0 0 0"/>
         <parent link="base_link"/>
-        <child link="base_footprint"/>
-    </joint>    
+        <child link="front_bumper"/>
+    </joint>
+
+    <xacro:property name="rear_bumper_offset" value="0.065"/>
+    <xacro:property name="rear_bumper_width" value="0.255"/>
+    <xacro:property name="rear_bumper_height" value="0.07"/>
+
+    <link name="rear_bumper">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 ${rear_bumper_width} ${rear_bumper_height}"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 ${rear_bumper_width} ${rear_bumper_height}"/>
+            </geometry>
+        </collision>
+    </link>
+    <joint name="rear_bumper_joint" type="fixed">
+        <origin xyz="-${rear_bumper_offset + base_length / 2.0} 0 ${rear_bumper_height / 2.0}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="rear_bumper"/>
+    </joint>
+
+    <!-- wheels -->
+    <link name="left_front_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+            <material name="black_front"/>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+        </collision>
+        </visual>
+    </link>
+    <joint name="left_front_wheel_joint" type="fixed">
+        <origin xyz="${wheel_base / 2.0} ${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
+        <parent link="base_link"/>
+        <child link="left_front_wheel"/>        
+    </joint>
+
+    <link name="right_front_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+            <material name="black_front"/>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+        </collision>
+        </visual>
+    </link>
+    <joint name="right_front_wheel_joint" type="fixed">
+        <origin xyz="${wheel_base / 2.0} -${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
+        <parent link="base_link"/>
+        <child link="right_front_wheel"/>
+    </joint>
+
+    <link name="left_rear_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+            <material name="black_rear"/>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+        </collision>
+        </visual>
+    </link>
+    <joint name="left_rear_wheel_joint" type="fixed">
+        <origin xyz="-${wheel_base / 2.0} ${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
+        <parent link="base_link"/>
+        <child link="left_rear_wheel"/>
+    </joint>
+
+    <link name="right_rear_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+            <material name="black_rear"/>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
+            </geometry>
+        </collision>
+        </visual>
+    </link>
+    <joint name="right_rear_wheel_joint" type="fixed">
+        <origin xyz="-${wheel_base / 2.0} -${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
+        <parent link="base_link"/>
+        <child link="right_rear_wheel"/>
+    </joint>
+
 </robot>
