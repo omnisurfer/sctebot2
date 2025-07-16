@@ -6,6 +6,8 @@
 
     ROS2 Control https://control.ros.org/humble/index.html
     
+    R2D2 https://github.com/ros/urdf_tutorial/tree/ros2
+
      -->
     
     <!-- Math constants -->
@@ -30,7 +32,7 @@
 
     <material name="green">
         <color rgba="0 0.8 0 1"/>
-    </material>    
+    </material>
 
     <!-- Robot base dimensions -->
     <xacro:property name="base_length" value="0.442" /> <!-- wheel base derived from this -->
@@ -126,6 +128,7 @@
         <parent link="base_link"/>
         <child link="rear_bumper"/>
     </joint>
+    <!-- end bumpbers -->
 
     <!-- wheels -->
     <link name="left_front_wheel">
@@ -143,10 +146,11 @@
         </collision>
         </visual>
     </link>
-    <joint name="left_front_wheel_joint" type="fixed">
+    <joint name="left_front_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
         <origin xyz="${wheel_base / 2.0} ${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
         <parent link="base_link"/>
-        <child link="left_front_wheel"/>        
+        <child link="left_front_wheel"/>
     </joint>
 
     <link name="right_front_wheel">
@@ -164,7 +168,8 @@
         </collision>
         </visual>
     </link>
-    <joint name="right_front_wheel_joint" type="fixed">
+    <joint name="right_front_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
         <origin xyz="${wheel_base / 2.0} -${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
         <parent link="base_link"/>
         <child link="right_front_wheel"/>
@@ -185,7 +190,8 @@
         </collision>
         </visual>
     </link>
-    <joint name="left_rear_wheel_joint" type="fixed">
+    <joint name="left_rear_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
         <origin xyz="-${wheel_base / 2.0} ${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
         <parent link="base_link"/>
         <child link="left_rear_wheel"/>
@@ -206,10 +212,36 @@
         </collision>
         </visual>
     </link>
-    <joint name="right_rear_wheel_joint" type="fixed">
+    <joint name="right_rear_wheel_joint" type="continuous">
+        <axis xyz="0 0 1"/>
         <origin xyz="-${wheel_base / 2.0} -${wheel_track / 2.0} 0" rpy="${90 * deg_to_rad} 0 0" />
         <parent link="base_link"/>
         <child link="right_rear_wheel"/>
     </joint>
+    <!-- end wheels -->
+
+    <!-- sensors -->
+    <!-- x 0.323m span, 0.162m center from axis z -->
+    <link name="ydlidar_sensor">
+        <visual>            
+            <origin xyz="0 0 0.3" rpy="0 0 0"/>
+            <geometry>
+                <!--cylinder length="0.041" radius="0.035"/-->
+                <mesh filename="package://ydlidar_description/meshes/ydlidar.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <joint name="ydlidar_sensor_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="ydlidar_sensor"/>
+    </joint>
+
+    <xacro:include filename="$(find realsense2_description)/urdf/_d455.urdf.xacro"/>
+    <xacro:arg name="use_nominal_extrinsics" default="false"/>
+    <xacro:sensor_d455 parent="base_link" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+        <origin xyz="0.2 0 0.3" rpy="0 0 0"/>
+    </xacro:sensor_d455>    
+    <!-- end sensors -->
 
 </robot>
