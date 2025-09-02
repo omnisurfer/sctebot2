@@ -1,10 +1,18 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="carlikebot_virtual_wheels" params="name prefix wheelbase base_height virtual_rear_wheel_parent_link virtual_front_wheel_parent_link">
+    <xacro:macro name="carlikebot_virtual_wheels" params="
+        prefix 
+        wheel_base         
+        wheel_radius
+        wheel_height
+        virtual_rear_wheel_parent_link
+        virtual_front_wheel_parent_link
+    ">
 
         <material name="invisible">
-            <color rgba="1.0 0.0 0.0 0.0"/>
+            <!--color rgba="0.0 0.0 0.0 0.0"/-->
+            <color rgba="0.0 0.0 0.0 1.0"/>
         </material>
 
         <!--virtual rear wheel -->
@@ -12,7 +20,7 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <cylinder length="0.10" radius="0.10"/>                
+                    <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
                 </geometry>
                 <material name="invisible"/>
             </visual>
@@ -21,8 +29,8 @@
         <joint name="${prefix}virtual_rear_wheel_joint" type="continuous">
             <parent link="${virtual_rear_wheel_parent_link}"/>
             <child link="${prefix}virtual_rear_wheel"/>
-            <origin xyz="-${wheelbase/2} 0 -${base_height/2}" rpy="0 0 ${PI/2}"/>
-            <axis xyz="1 0 0"/>
+            <origin xyz="-${wheel_base/2} 0 0" rpy="${90 * deg_to_rad} 0 0"/>
+            <axis xyz="0 0 1"/>
             <limit effort="100.0" velocity="100.0"/>
             <dynamics damping="0.2"/>
         </joint>
@@ -32,7 +40,7 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <cylinder length="0.1" radius="0.1"/>
+                    <cylinder length="${wheel_height}" radius="${wheel_radius}"/>
                 </geometry>
                 <material name="invisible"/>
             </visual>
@@ -41,7 +49,7 @@
         <joint name="${prefix}virtual_front_wheel_joint" type="revolute">
             <parent link="${virtual_front_wheel_parent_link}"/>
             <child link="${prefix}virtual_front_wheel"/>
-            <origin xyz="${wheelbase/2} 0 -${base_height/2}" rpy="0 0 ${PI/2}"/>
+            <origin xyz="${wheel_base/2} 0 0" rpy="${90 * deg_to_rad} 0 0"/>
             <axis xyz="0 0 1"/>
             <limit lower="-0.4" upper="0.4" effort="100.0" velocity="10.0"/>
             <dynamics damping="0.2"/>
@@ -51,7 +59,7 @@
         <joint name="${prefix}front_left_wheel_joint" type="revolute">
             <parent link="${prefix}chassis_link" />
             <child link="${prefix}front_left_wheel" />
-            <origin xyz="${wheelbase/2} -${base_width/2} -${base_height/2}" rpy="0 0 ${PI/2}"/>
+            <origin xyz="${wheelbase/2} -${base_width/2} 0" rpy="0 0 ${PI/2}"/>
             <axis xyz="0 0 1"/>
             <limit lower="-0.4" upper="0.4" effort="100.0" velocity="10.0"/>
             <dynamics damping="0.2"/>
