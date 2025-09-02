@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="carlikebot_virtual_wheels" params="name prefix wheelbase base_height virtual_rear_wheel_parent_link virtual_front_wheel_parent_link">
+
+        <material name="invisible">
+            <color rgba="1.0 0.0 0.0 0.0"/>
+        </material>
+
+        <!--virtual rear wheel -->
+        <link name="${prefix}virtual_rear_wheel">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder length="0.10" radius="0.10"/>                
+                </geometry>
+                <material name="invisible"/>
+            </visual>
+        </link>
+
+        <joint name="${prefix}virtual_rear_wheel_joint" type="continuous">
+            <parent link="${virtual_rear_wheel_parent_link}"/>
+            <child link="${prefix}virtual_rear_wheel"/>
+            <origin xyz="-${wheelbase/2} 0 -${base_height/2}" rpy="0 0 ${PI/2}"/>
+            <axis xyz="1 0 0"/>
+            <limit effort="100.0" velocity="100.0"/>
+            <dynamics damping="0.2"/>
+        </joint>
+
+        <!-- virtual front steer wheel -->
+        <link name="${prefix}virtual_front_wheel">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <cylinder length="0.1" radius="0.1"/>
+                </geometry>
+                <material name="invisible"/>
+            </visual>
+        </link>
+
+        <joint name="${prefix}virtual_front_wheel_joint" type="revolute">
+            <parent link="${virtual_front_wheel_parent_link}"/>
+            <child link="${prefix}virtual_front_wheel"/>
+            <origin xyz="${wheelbase/2} 0 -${base_height/2}" rpy="0 0 ${PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit lower="-0.4" upper="0.4" effort="100.0" velocity="10.0"/>
+            <dynamics damping="0.2"/>
+        </joint>
+
+        <!--
+        <joint name="${prefix}front_left_wheel_joint" type="revolute">
+            <parent link="${prefix}chassis_link" />
+            <child link="${prefix}front_left_wheel" />
+            <origin xyz="${wheelbase/2} -${base_width/2} -${base_height/2}" rpy="0 0 ${PI/2}"/>
+            <axis xyz="0 0 1"/>
+            <limit lower="-0.4" upper="0.4" effort="100.0" velocity="10.0"/>
+            <dynamics damping="0.2"/>
+            <mimic joint="${prefix}virtual_front_wheel_joint" multiplier="1.0" offset="0.0"/>
+        </joint>
+        -->
+
+    </xacro:macro>
+</robot>
